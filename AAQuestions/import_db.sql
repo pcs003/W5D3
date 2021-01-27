@@ -57,7 +57,8 @@ INSERT INTO
     questions(title,body,associated_author)
 VALUES
     ('CSS','Please help',(SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah')),
-    ('SQL','Please help',(SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'));
+    ('SQL','Please help',(SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah')),
+    ('Ruby','Please help',(SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'));
 
 INSERT INTO
     question_follows(users_id,questions_id)
@@ -81,4 +82,11 @@ VALUES
     ('rip', (SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'),(SELECT id FROM questions WHERE title = 'SQL'),(SELECT id FROM replies WHERE body = 'same'));
     
 
+INSERT INTO
+    question_likes(users_id, questions_id)
+VALUES
+    ((SELECT id FROM users WHERE fname = 'Lijun' AND lname = 'Gan'),(SELECT id FROM questions WHERE title = 'SQL')),
+    ((SELECT id FROM users WHERE fname = 'Lijun' AND lname = 'Gan'),(SELECT id FROM questions WHERE title = 'CSS')),
+    ((SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'),(SELECT id FROM questions WHERE title = 'Ruby')),
+    ((SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'),(SELECT id FROM questions WHERE title = 'CSS'));
     
