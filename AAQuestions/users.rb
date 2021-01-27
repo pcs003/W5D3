@@ -74,6 +74,35 @@ class User
         data.first['num_likes'].to_f / data.first['num_questions'].to_f
     end
 
+    def save 
+        if self.id
+            self.update
+        else 
+            self.insert
+        end 
+    end 
+
+    def insert 
+        QuestionsDBConnection.instance.execute(<<-SQL, self.fname, self.lname)
+            INSERT INTO 
+                users(fname, lname)
+            VALUES
+                (?,?)
+        SQL
+        self.id = QuestionsDBConnection.instance.last_insert_row_id
+    end  
+
+    def update
+        QuestionsDBConnection.instance.execute(<<-SQL, self.fname, self.lname, self.id)
+            UPDATE
+                users
+            SET
+                fname = ?, lname = ?
+            WHERE
+                id = ?
+        SQL
+    end 
+
 end
 
 # q1  lijun

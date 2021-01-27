@@ -96,4 +96,33 @@ class Reply
         Reply.find_by_parent_reply_id(self.id)
     end
 
+    def save 
+        if self.id
+            self.update
+        else 
+            self.insert
+        end 
+    end 
+
+    def insert 
+        QuestionsDBConnection.instance.execute(<<-SQL,self.body, self.users_id, self.questions_id, self.parent_reply_id)
+            INSERT INTO 
+                replies(body, users_id, questions_id, parent_reply_id)
+            VALUES
+                (?,?,?,?)
+        SQL
+        self.id = QuestionsDBConnection.instance.last_insert_row_id
+    end  
+
+    def update
+        QuestionsDBConnection.instance.execute(<<-SQL, self.title, self.body, self.associated_author,self.id)
+            UPDATE
+                replies
+            SET
+                body = ?, users_id = ?, questions_id = ?, parent_reply_id = ?
+            WHERE
+                id = ?
+        SQL
+    end 
+
 end

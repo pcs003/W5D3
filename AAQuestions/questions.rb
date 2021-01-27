@@ -78,4 +78,33 @@ class Question
         Question_Like.num_likes_for_question_id(self.id)
     end
 
+    def save 
+        if self.id
+            self.update
+        else 
+            self.insert
+        end 
+    end 
+
+    def insert 
+        QuestionsDBConnection.instance.execute(<<-SQL, self.title, self.body, self.associated_author)
+            INSERT INTO 
+                questions(title, body, associated_author)
+            VALUES
+                (?,?,?)
+        SQL
+        self.id = QuestionsDBConnection.instance.last_insert_row_id
+    end  
+
+    def update
+        QuestionsDBConnection.instance.execute(<<-SQL, self.title, self.body, self.associated_author,self.id)
+            UPDATE
+                questio
+            SET
+                title = ?, body = ?, associated_author = ?
+            WHERE
+                id = ?
+        SQL
+    end 
+
 end
