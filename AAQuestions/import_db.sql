@@ -62,12 +62,16 @@ VALUES
 INSERT INTO
     question_follows(users_id,questions_id)
 VALUES
-    ((SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'),(SELECT id FROM questions WHERE title = "SQL")),
-    ((SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'),(SELECT id FROM questions WHERE title = "CSS"));
+    ((SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'),(SELECT id FROM questions WHERE title = 'SQL')),
+    ((SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'),(SELECT id FROM questions WHERE title = 'CSS'));
 
 INSERT INTO
     replies(body, users_id, questions_id, parent_reply_id)
 VALUES
-    ('same', (SELECT id FROM users WHERE fname = 'Lijun' AND lname = 'Gan'),(SELECT id FROM questions WHERE title = "SQL"), NULL),
-    ('rip', (SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'),(SELECT id FROM questions WHERE title = "CSS"),(SELECT id FROM replies WHERE body= "same"));
+    ('same', (SELECT id FROM users WHERE fname = 'Lijun' AND lname = 'Gan'),(SELECT id FROM questions WHERE title = 'SQL'), NULL);
+
+INSERT INTO
+    replies(body, users_id, questions_id, parent_reply_id)
+VALUES
+    ('rip', (SELECT id FROM users WHERE fname = 'Parth' AND lname = 'Shah'),(SELECT id FROM questions WHERE title = 'SQL'),(SELECT id FROM replies WHERE body = 'same'));
     

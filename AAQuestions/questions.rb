@@ -51,6 +51,14 @@ class User
         @lname = user_info['lname']
     end
 
+    def authored_questions
+        Question.find_by_author_id(self.id)
+    end
+
+    def authored_replies
+        Reply.find_by_user_id(self.id)
+    end
+
 
 end
 
@@ -78,8 +86,8 @@ class Question
     end
 
     def self.find_by_author_id(author_id)
-        author = User.find_by_id(id)
-        raise '#{self} is not in database' unless author
+        author = User.find_by_id(author_id)
+        raise "#{self} is not in database" unless author
         questions = QuestionsDBConnection.instance.execute(<<-SQL, author.id)
             SELECT
                 *
@@ -97,6 +105,14 @@ class Question
         @title = question_info['title']
         @body = question_info['body']
         @associated_author = question_info['associated_author']
+    end
+
+    def author
+        User.find_by_id(self.associated_author)
+    end
+
+    def replies
+        Reply.find_by_question_id(self.id)
     end
 end
 
@@ -153,7 +169,7 @@ class Reply
 
     def self.find_by_user_id(id)
         author = User.find_by_id(id)
-        raise '#{self} is not in database' unless author
+        raise "#{self} is not in database" unless author
         replies = QuestionsDBConnection.instance.execute(<<-SQL, author.id)
             SELECT
                 *
@@ -169,7 +185,7 @@ class Reply
 
     def self.find_by_question_id(id)
         question = Question.find_by_id(id)
-        raise '#{self} is not in database' unless question
+        raise "#{self} is not in database" unless question
         replies = QuestionsDBConnection.instance.execute(<<-SQL, question.id)
             SELECT
                 *
@@ -182,12 +198,43 @@ class Reply
         replies.map {|reply| Reply.new(reply) }
     end 
 
+    def self.find_by_parent_reply_id(id)
+        reply = Reply.find_by_id(id)
+        raise "#{self} is not in database" unless reply
+        child_replies = QuestionsDBConnection.instance.execute(<<-SQL, reply.id)
+            SELECT
+                *
+            FROM
+                replies
+            WHERE
+                parent_reply_id = ?
+        SQL
+        return nil unless child_replies.length > 0
+        child_replies.map {|reply| Reply.new(reply) }
+    end 
+
     def initialize(reply_info)
         @id = reply_info['id']
         @body = reply_info['body']
         @users_id = reply_info['users_id']
         @questions_id = reply_info['questions_id']
         @parent_reply_id = reply_info['parent_reply_id']
+    end
+
+    def author
+        User.find_by_id(self.users_id)
+    end
+
+    def question
+        Question.find_by_id(self.questions_id)
+    end
+
+    def parent_reply
+        Reply.find_by_id(self.parent_reply_id)
+    end
+
+    def child_replies
+        Reply.find_by_parent_reply_id(self.id)
     end
 
 end
