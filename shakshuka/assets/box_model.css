@@ -98,4 +98,14 @@ header > img {
 
 body {
   width: 900px;
+  margin: 0 auto;
 }
+
+aside {
+  width: 180px;
+}
+
+section {
+  width: 700px;
+}
+
